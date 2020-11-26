@@ -47,10 +47,9 @@ class SeabornNeoPixel():
         delta = (time.time() - self.start)
         return delta * self.mock_speed_up
 
-    def sleep(self, time_delta=None, count=1):
-        time_delta = self.time_delta if time_delta is None else time_delta
-        print("sleeping for: %s"%time_delta)
-        time.sleep(time_delta * count)
+    def sleep(self, update_rate=None, count=1):
+        update_rate = self.update_rate if update_rate is None else update_rate
+        time.sleep(update_rate * count)
 
     def write(self, add_header=False):
         if self.real_mode:

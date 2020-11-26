@@ -2,17 +2,14 @@ from seaborn_neopixel import SeabornNeoPixel, SeabornPixel
 COLORS = ['RED', 'GREEN', 'BLUE']
 
 
-def main(count=1200, update_rate=0.02):
-    np=None
-    for i in range(1, count):
-        np = SeabornNeoPixel(pin=5, count=count, update_rate=update_rate)
-        for j in range(len(np)):
-            np.fade()
-            np[j].set(COLORS[i%3])
-            np.write()
-            np.sleep()
-        np.fade(count=26)
-    np.set_all('WHITE')
+def main(start=0, end=100, step=10, update_rate=0.1):
+    for i in range(start, end-step, step):
+        np = SeabornNeoPixel(pin=5, count=i+step, update_rate=update_rate)
+        for j in range(start, i, step):
+            for k in range(step):
+                np[j+k].set(COLORS[j%3])
+        np.write()
+        np.sleep()
 
 
 if __name__ == '__main__':
