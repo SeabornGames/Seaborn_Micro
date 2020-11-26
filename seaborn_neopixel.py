@@ -75,6 +75,9 @@ class SeabornNeoPixel():
             ret.append(unselected_pixels.pop(i))
         return ret
 
+    def __len__(self):
+        return self.count
+
     def __iter__(self):
         return self.pixels.__iter__()
 
