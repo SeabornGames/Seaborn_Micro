@@ -1,1 +1,3 @@
 micro_secrets.py
+*.pyc
+__pycache__
