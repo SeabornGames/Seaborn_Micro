@@ -10,7 +10,8 @@ def randint(lower, upper):
 
 
 class SeabornNeoPixel():
-    def __init__(self, pin, count, update_rate = 0.1, mock_speed_up=10):
+    def __init__(self, pin, count, update_rate = 0.1, mock_speed_up=10,
+                 skip_header=False):
         self.start = time.time()
         self.count = count
         self.mock_speed_up = 1
@@ -22,8 +23,9 @@ class SeabornNeoPixel():
             self.np = [(0, 0, 0) for i in range(count)]
             self.real_mode = False
             self.mock_speed_up = mock_speed_up
-            print("Running in Mock Mode")
-            print(self.header)
+            if not skip_header:
+                print("Running in Mock Mode")
+                print(self.header)
 
         self.update_rate = update_rate / self.mock_speed_up
         self.pixels = [SeabornPixel(i, self) for i in range(count)]
