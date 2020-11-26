@@ -1,7 +1,7 @@
 from seaborn_neopixel import SeabornNeoPixel
 
 
-def main(count=200):
+def main(count=1200):
     np = SeabornNeoPixel(5, count)
     colors = ['RED', 'GREEN', 'BLUE', 'WHITE']
     for i in range(np.count):
