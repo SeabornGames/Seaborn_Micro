@@ -141,7 +141,7 @@ def request_rtc(url='http://micropython.org/ks/test.html', pixels=None,
         rtc = machine.RTC()
         rtc.datetime((_eval(year), month, _eval(day), 0, _eval(hour),
                       _eval(minute), _eval(second), 0))
-        setup_status(pixels, STATUS.go, 'datetime set: %s'%rtc.datetime())
+        setup_status(pixels, STATUS.go, 'datetime set: %s'%str(rtc.datetime()))
     except Exception as ex:
         setup_status(pixels, STATUS.exception, 'exception: %s' % ex)
         raise

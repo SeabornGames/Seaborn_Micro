@@ -46,6 +46,10 @@ class SeabornNeoPixel():
     def time_delta(self):
         return (time.time() - self.start) * self.mock_speed_up
 
+    def sleep(self, time_delta=None, count=1):
+        time_delta = self.time_delta if time_delta is None else time_delta
+        time.sleep(time_delta * count)
+
     def write(self, add_header=False):
         if self.real_mode:
             self.np.write()

@@ -13,7 +13,7 @@ Micro Python libraries for controlling LED lights
                      INDEX is the custom index for the microship
 
     # the rest are scripts for various projects
-    bullet_hol 
+    bullet_hole
 
 
 ## Setup Micro Python Commands
