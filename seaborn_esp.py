@@ -3,6 +3,7 @@
 """
 
 import socket
+import time
 from micro_secrets import ESSID, ESSID_PWD, NAME
 
 
@@ -14,7 +15,7 @@ class STATUS:
     exception = 'EXCEPTION'
 
 
-def connect_to_network(pixels=None):
+def connect_to_network(pixels=None, retry=10):
     # sta_if STA mode allows the ESP8266 to connect to a Wi-Fi network
     # ap_if AP mode allows it to create its own network and have other devices
 
@@ -22,22 +23,25 @@ def connect_to_network(pixels=None):
         import network
     except ImportError:
         return mock_connect_to_network(pixels)
-    try:
-        setup_status(pixels, STATUS.ready, 'initializing network')
-        sta_if = network.WLAN(network.STA_IF)
-        if not sta_if.isconnected():
-            sta_if.active(True)
-            setup_status(pixels, STATUS.set, 'connecting to network')
-            sta_if.connect(ESSID, ESSID_PWD)
-            while not sta_if.isconnected():
-                setup_status(pixels, STATUS.problem, 'problem connecting')
-                if pixels:
-                    pixels[0].blink(1, pixels, 0.1)
-                pass
-        setup_status(pixels, STATUS.go, 'network configured')
-    except Exception as ex:
-        setup_status(pixels, STATUS.exception, ex)
-        raise
+    for r in range(retry):
+        try:
+            setup_status(pixels, STATUS.ready, 'initializing network')
+            sta_if = network.WLAN(network.STA_IF)
+            if not sta_if.isconnected():
+                sta_if.active(True)
+                setup_status(pixels, STATUS.set, 'connecting to network')
+                sta_if.connect(ESSID, ESSID_PWD)
+                while not sta_if.isconnected():
+                    setup_status(pixels, STATUS.problem, 'problem connecting')
+                    if pixels:
+                        pixels[0].blink(1, pixels, 0.1)
+                    pass
+            setup_status(pixels, STATUS.go, 'network configured')
+        except Exception as ex:
+            setup_status(pixels, STATUS.exception, ex)
+            if r == retry -1:
+                raise
+            time.sleep(3)
 
 
 def mock_connect_to_network(pixels):
@@ -141,7 +145,10 @@ def request_rtc(url='http://micropython.org/ks/test.html', pixels=None,
         rtc = machine.RTC()
         rtc.datetime((_eval(year), month, _eval(day), 0, _eval(hour),
                       _eval(minute), _eval(second), 0))
+        if pixels:
+            pixels[0].seaborn_neopixel.start_time = time.time()
         setup_status(pixels, STATUS.go, 'datetime set: %s'%str(rtc.datetime()))
+        return time.time()
     except Exception as ex:
         setup_status(pixels, STATUS.exception, 'exception: %s' % ex)
         raise

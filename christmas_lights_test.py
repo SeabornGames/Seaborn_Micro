@@ -7,14 +7,16 @@ def main(count=50):
     np = SeabornNeoPixel(pin=5, count=50)
     setup_status(np.pixels[0:1], STATUS.ready, 'setup microchip: %s' % NAME)
     connect_to_network(pixels=np.pixels[1:2])
-    request_rtc(pixels=np.pixels[2:3])
+    np.start = request_rtc(pixels=np.pixels[2:3])
     setup_status(np.pixels[0:1], STATUS.go, 'setup complete for: %s' % NAME)
     while True:
         for color in SeabornPixel.COLORS:
+            if color is 'BLACK':
+                continue
             np.set_all(color)
             np.write()
             np.sleep()
-            np.fade(count=10)
+            np.fade(count=26)
 
 
 if __name__ == '__main__':

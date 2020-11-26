@@ -6,7 +6,7 @@ def main(count=200):
     colors = ['RED', 'GREEN', 'BLUE', 'WHITE']
     for i in range(np.count):
         np[i].set(colors[i%len(colors)])
-    np.write()
+        np.write()
 
 
 if __name__ == '__main__':

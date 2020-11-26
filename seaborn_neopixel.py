@@ -44,10 +44,12 @@ class SeabornNeoPixel():
 
     @property
     def time_delta(self):
-        return (time.time() - self.start) * self.mock_speed_up
+        delta = (time.time() - self.start)
+        return delta * self.mock_speed_up
 
     def sleep(self, time_delta=None, count=1):
         time_delta = self.time_delta if time_delta is None else time_delta
+        print("sleeping for: %s"%time_delta)
         time.sleep(time_delta * count)
 
     def write(self, add_header=False):
@@ -80,19 +82,19 @@ class SeabornNeoPixel():
         for p in self.pixels:
             p.set(color)
 
-    def blink(self, count=1, pixels=None, time_delta=None):
-        if time_delta is None:
-            time_delta = self.update_rate
+    def blink(self, count=1, pixels=None, update_rate=None):
+        if update_rate is None:
+            update_rate = self.update_rate
 
         if pixels is None:
             pixels = [p for p in self.pixels if p.color != [0, 0, 0]]
         for c in range(count):
             self.write()
-            time.sleep(time_delta)
+            time.sleep(update_rate)
             for a in pixels:
                 a.set('BLACK')
             self.write()
-            time.sleep(time_delta)
+            time.sleep(update_rate)
             for a in pixels:
                 a.set(a.last_color)
 
