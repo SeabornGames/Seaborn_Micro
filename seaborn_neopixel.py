@@ -23,7 +23,7 @@ class SeabornNeoPixel():
             self.np = [(0, 0, 0) for i in range(count)]
             self.real_mode = False
             self.mock_speed_up = mock_speed_up
-            if not skip_header:
+            if skip_header:
                 print("Running in Mock Mode")
                 print(self.header)
 
