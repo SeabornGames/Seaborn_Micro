@@ -1,7 +1,6 @@
 from seaborn_neopixel import SeabornNeoPixel
 
-
-def main(count=75, pin=5, update_rate=0.1):
+def main(count=60, pin=5, update_rate=0.005):
     colors = ['RED', 'GREEN', 'BLUE']
     np = SeabornNeoPixel(pin=pin, count=count, update_rate=update_rate)
     for j in range(10000):
