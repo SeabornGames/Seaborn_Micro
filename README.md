@@ -22,6 +22,8 @@ ls /dev/cu.*
 
 esptool.py --p /dev/cu.SLAB_USBtoUART    -c esp8266 -b 921600 erase_flash
 esptool.py --p /dev/cu.SLAB_USBtoUART    -c esp8266 -b 921600 write_flash --flash_size=detect 0 ../esp8266-20191220-v1.12.bin 
+ampy --port /dev/cu.SLAB_USBtoUART put seaborn_neopixel.py seaborn_neopixel.py
+
 
 ### modify micro_secrets first
 ampy --port /dev/cu.SLAB_USBtoUART put micro_secrets.py micro_secrets.py
