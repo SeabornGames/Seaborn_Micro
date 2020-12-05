@@ -28,6 +28,7 @@ class SeabornNeoPixel():
             import machine, neopixel
             self.np = neopixel.NeoPixel(machine.Pin(pin), count)
         except ImportError:
+            self.run_count= 3
             self.np = [(0, 0, 0) for i in range(count)]
             self.mock_speed_up = mock_speed_up
             if skip_header:
@@ -85,6 +86,14 @@ class SeabornNeoPixel():
             ret.append(unselected_pixels.pop(i))
         return ret
 
+    @property
+    def running(self):
+        if isinstance(self.np, list):  # running in mock mode
+            self.run_count -= 1
+            return self.run_count >= 0
+        else:
+            return True
+
     def __len__(self):
         return self.count
 
@@ -115,14 +124,14 @@ class SeabornNeoPixel():
                 self.np[i] = color
 
     def fade(self, color, pixel_indexes=None, count=10, percent=10,
-             update_rate=None):
+             update_rate=None, delta=None):
         update_rate = self.update_rate if update_rate is None else update_rate
         if pixel_indexes is None:
             pixel_indexes = range(self.count)
         if isinstance(color, str):
             color = self.COLORS[color]
-        delta = [c // percent + (1 if c % percent else 0)
-                 for c in color]
+        if delta is None:
+            delta = [c // percent + (1 if c % percent else 0) for c in color]
         for c in range(count):
             color = (color[0] - delta[0],
                      color[1] - delta[1],
@@ -131,6 +140,7 @@ class SeabornNeoPixel():
                 self.np[i] = color
             self.write()
             time.sleep(update_rate)
+        return color
 
     def color_char(self, index):
         color = self.np[index]

@@ -52,3 +52,12 @@ https://www.amazon.com/gp/product/B01IXXACD0/ref=as_li_tl?ie=UTF8&camp=1789&crea
 Buy a module to keep the real clock setting, but I see if request_rtc works.
 
 
+# WLED
+
+esptool.py --p /dev/cu.SLAB_USBtoUART    -c esp8266 -b 921600 erase_flash
+esptool.py --p /dev/cu.SLAB_USBtoUART    -c esp8266 -b 921600 write_flash --flash_size=detect 0 ./wled/WLED_0.11.0_ESP8266.bin
+
+https://github.com/Aircoookie/WLED/releases
+
+pwd: wled1234
+
