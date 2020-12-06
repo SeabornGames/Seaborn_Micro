@@ -1,7 +1,7 @@
 from seaborn_neopixel import SeabornNeoPixel
 
 
-def main(count=110, pin=5, update_rate=0.005):
+def main(count=110, pin=5, update_rate=0.0005):
     np = SeabornNeoPixel(pin=pin, count=count, update_rate=update_rate)
     while True:
         for i in range(count):

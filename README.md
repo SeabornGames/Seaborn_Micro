@@ -61,3 +61,11 @@ https://github.com/Aircoookie/WLED/releases
 
 pwd: wled1234
 
+
+# ESP-12F: ESP8266
+
+https://www.instructables.com/ESP-12F-ESP8266-Module-Connection-Test/
+
+esptool.py --p /dev/cu.usbserial-14310 -c esp8266 -b 748800 erase_flash
+esptool.py --p /dev/cu.usbserial-14110 -c esp8266 -b 748800 write_flash --flash_size=detect 0 ./wled/WLED_0.11.0_ESP8266.bin
+
