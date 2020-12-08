@@ -2,7 +2,7 @@ from seaborn_neopixel import (SeabornNeoPixel, randint, SeabornEngine,
                               SeabornTransition)
 
 
-def main(count=100, rand_count=20, max_step=10, pin=5, update_rate=0.5):
+def main(count=297, rand_count=30, max_step=10, pin=5, update_rate=0.5):
     np = SeabornNeoPixel(count=count, pin=pin, update_rate=update_rate)
     colors = np.get_colors('GREEN', 'RED')
     indexes = []
