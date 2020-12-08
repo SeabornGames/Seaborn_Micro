@@ -10,7 +10,51 @@ def randint(lower, upper):
     return (random.getrandbits(int(math.log(gap, 2))) % gap) + lower
 
 
-class SeabornNeoPixel():
+class SeabornEngine:
+    def __init__(self, threads=None):
+        self.threads = threads or []
+
+    def __iter__(self):
+        while self.threads:
+            ret = []
+            for i in range(len(self.threads) - 1, -1, -1):
+                ret.append(self.threads[i]())
+            yield ret
+
+    def append(self, thread):
+        self.threads.append(thread)
+
+    def add_transition(self, np, index, colors, steps):
+        thread = SeabornTransition(np, index, colors, steps)
+        self.threads.append(thread)
+
+
+class SeabornTransition:
+    def __init__(self, np, index, colors, steps):
+        self.np = np
+        self.index = index
+        self.colors = colors
+        self.steps = steps
+        self.n = -1
+
+    def __call__(self):
+        self.n += 1
+        c1 = self.colors[0]
+        c2 = self.colors[1]
+        new_color = (c1[0] - (c1[0] - c2[0]) * self.n // self.steps[0],
+                     c1[1] - (c1[1] - c2[1]) * self.n // self.steps[0],
+                     c1[2] - (c1[2] - c2[2]) * self.n // self.steps[0])
+        self.np[self.index] = new_color
+        # print("index: %-5s  color: %15s   %s / %s" % (
+        #     self.index, new_color, self.n, self.steps[0]))
+        if self.n == self.steps[0] - 1:
+            self.n = -1
+            self.colors.pop(0)
+            self.steps.pop(0)
+        return None if bool(self.steps) else self
+
+
+class SeabornNeoPixel:
     COLORS = {'RED': (255, 0, 0),
               'GREEN': (0, 255, 0),
               'BLUE': (0, 0, 255),
@@ -28,7 +72,7 @@ class SeabornNeoPixel():
             import machine, neopixel
             self.np = neopixel.NeoPixel(machine.Pin(pin), count)
         except ImportError:
-            self.run_count= 3
+            self.run_count = 3
             self.np = [(0, 0, 0) for i in range(count)]
             self.mock_speed_up = mock_speed_up
             if skip_header:
@@ -49,6 +93,8 @@ class SeabornNeoPixel():
         return '\33[33m' + '\n'.join(ret) + '\033[0m'
 
     def __setitem__(self, index, color):
+        if index < 0 or index >= self.count:
+            return
         if isinstance(color, str):
             color = self.COLORS[color]
         self.np[index] = color
