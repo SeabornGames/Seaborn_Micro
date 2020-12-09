@@ -1,9 +1,10 @@
 from seaborn_neopixel import SeabornNeoPixel, randint
 
 
-def main(count=297, segments=10, pin=5, update_rate=0.5):
-    np = SeabornNeoPixel(count=count, pin=pin, update_rate=update_rate)
-    colors = np.get_colors('GREEN', 'RED')
+def main(count=297, segments=10, pin=5, update_rate=0.05):
+    np = SeabornNeoPixel(count=count, pin=pin, update_rate=update_rate,
+                         mock_run_count=9)
+    colors = np.get_colors('GREEN', 'RED')  # 'BLUE', 'PURPLE', 'YELLOW')
 
     while np.running:
         for i in range(count):
@@ -11,8 +12,9 @@ def main(count=297, segments=10, pin=5, update_rate=0.5):
         np.write()
         np.sleep()
         colors = colors[1:] + colors[:1]
-        up_index = [round(count / segments * i) for i in range(segments)]
-        down_index = [round(count / segments * i) for i in range(segments)]
+        up_index = [round(count / segments * (i + 0.5))
+                    for i in range(segments)]
+        down_index = up_index + []
         repeat = int(count / segments / 2)
         for j in range(repeat):
             for i in range(len(up_index)):
@@ -28,8 +30,9 @@ def main(count=297, segments=10, pin=5, update_rate=0.5):
 
 
 if __name__ == '__main__':
-    while True:
+    keep_running = True
+    while keep_running:
         try:
-            main()
-        except Exception:
-            pass
+            keep_running = main()
+        except Exception as ex:
+            print("exception: %s"%e)

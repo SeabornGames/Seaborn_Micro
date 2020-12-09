@@ -64,7 +64,7 @@ class SeabornNeoPixel:
               'PURPLE': (160, 32, 240)}
 
     def __init__(self, pin, count, update_rate=0.1, mock_speed_up=10,
-                 skip_header=False):
+                 mock_run_count=1, skip_header=False):
         self.start = time.time()
         self.count = count
         self.mock_speed_up = 1
@@ -72,7 +72,7 @@ class SeabornNeoPixel:
             import machine, neopixel
             self.np = neopixel.NeoPixel(machine.Pin(pin), count)
         except ImportError:
-            self.run_count = 3
+            self.run_count = mock_run_count
             self.np = [(0, 0, 0) for i in range(count)]
             self.mock_speed_up = mock_speed_up
             if skip_header:
