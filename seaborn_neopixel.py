@@ -64,13 +64,19 @@ class SeabornNeoPixel:
               'PURPLE': (160, 32, 240)}
 
     def __init__(self, pin, count, update_rate=0.1, mock_speed_up=10,
-                 mock_run_count=1, skip_header=False):
+                 mock_run_count=1, skip_header=False, backup_pin=None):
         self.start = time.time()
         self.count = count
         self.mock_speed_up = 1
+        self.backup_pin = None
         try:
             import machine, neopixel
             self.np = neopixel.NeoPixel(machine.Pin(pin), count)
+            if backup_pin is not None:
+                self.backup_pin = neopixel.NeoPixel(
+                    machine.Pin(backup_pin), count)
+            else:
+                self.backup_pin = None
         except ImportError:
             self.run_count = mock_run_count
             self.np = [(0, 0, 0) for i in range(count)]
@@ -98,6 +104,8 @@ class SeabornNeoPixel:
         if isinstance(color, str):
             color = self.COLORS[color]
         self.np[index] = color
+        if self.backup_pin is not None:
+            self.backup_pin.write()
 
     @property
     def time_delta(self):
@@ -120,6 +128,8 @@ class SeabornNeoPixel:
                                    for i in range(self.count)]))
         else:
             self.np.write()
+            if self.backup_pin is not None:
+                self.backup_pin.write()
 
     def get_random_pixel_indexes(self, count=1, deprioritized_pixels=None):
         ret = []
@@ -151,7 +161,7 @@ class SeabornNeoPixel:
         if isinstance(color, str):
             color = self.COLORS[color]
         for i in range(self.count):
-            self.np[i] = color
+            self[i] = color
 
     def blink(self, color, pixel_indexes=None, count=1, update_rate=None):
         update_rate = self.update_rate if update_rate is None else update_rate
@@ -163,11 +173,11 @@ class SeabornNeoPixel:
             self.write()
             time.sleep(update_rate)
             for i in pixel_indexes:
-                self.np[i] = (0, 0, 0)
+                self[i] = (0, 0, 0)
             self.write()
             time.sleep(update_rate)
             for i in pixel_indexes:
-                self.np[i] = color
+                self[i] = color
 
     def fade(self, color, pixel_indexes=None, count=10, percent=10,
              update_rate=None, delta=None):
@@ -183,7 +193,7 @@ class SeabornNeoPixel:
                      color[1] - delta[1],
                      color[2] - delta[2])
             for i in pixel_indexes:
-                self.np[i] = color
+                self[i] = color
             self.write()
             time.sleep(update_rate)
         return color
