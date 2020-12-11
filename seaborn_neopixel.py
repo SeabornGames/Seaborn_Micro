@@ -55,13 +55,16 @@ class SeabornTransition:
 
 
 class SeabornNeoPixel:
-    COLORS = {'RED': (255, 0, 0),
-              'GREEN': (0, 255, 0),
-              'BLUE': (0, 0, 255),
-              'WHITE': (255, 255, 255),
-              'BLACK': (0, 0, 0),
-              'YELLOW': (255, 255, 0),
-              'PURPLE': (160, 32, 240)}
+    COLORS = {
+                 'RED': (255, 0, 0),
+                 'GREEN': (0, 255, 0),
+                 'BLUE': (0, 0, 255),
+                 'WHITE': (255, 255, 255),
+                 'BLACK': (0, 0, 0),
+                 'YELLOW': (255, 255, 0),
+                 'PURPLE': (255, 0, 255),
+                 'AQUA': (0, 255, 255)
+             }
 
     def __init__(self, pin, count, update_rate=0.1, mock_speed_up=10,
                  mock_run_count=1, skip_header=False, backup_pin=None):
@@ -87,8 +90,13 @@ class SeabornNeoPixel:
         self.update_rate = update_rate / self.mock_speed_up
 
     @classmethod
-    def get_colors(cls, *colors):
-        return [cls.COLORS.get(c, c) for c in colors]
+    def get_colors(cls, *colors, power=1):
+        ret = [cls.COLORS.get(c, c) for c in colors]
+        if power < 1:
+            ret = [(int(round(r[0]*power)),
+                    int(round(r[1]*power)),
+                    int(round(r[2]*power))) for r in ret]
+        return ret
 
     @property
     def header(self):
@@ -209,6 +217,15 @@ class SeabornNeoPixel:
         elif color[1] == 0 and color[2] == 0:
             c = '\33[31m'  # red
             power = color[0]
+        elif color[2] == 0 and color[0] == color[1] and color[0]:
+            c = '\33[33m'  # yellow
+            power = color[0]
+        elif color[1] == 0 and color[0] == color[2] and color[0]:
+            c = '\33[35m'  # purple
+            power = color[2]
+        elif color[0] == 0 and color[1] == color[2] and color[1]:
+            c = '\33[36m'  # aqua
+            power = color[1]
         else:
             c = '\33[37m'  # white
             power = sum(color) / 3
