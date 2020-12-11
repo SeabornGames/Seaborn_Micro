@@ -5,7 +5,7 @@ def main(count=297, segments=10, pin=5, update_rate=0.05, backup_pin=6):
     np = SeabornNeoPixel(count=count, pin=pin, update_rate=update_rate,
                          mock_run_count=20, backup_pin=backup_pin)
     base_colors = ['GREEN', 'RED', 'BLUE', 'YELLOW', 'PURPLE', 'AQUA']
-    base_powers = [ 1, 0.5]
+    base_powers = [ 0.5, 1]
     colors = []
     for color in base_colors:
         for p in base_powers:
@@ -17,11 +17,9 @@ def main(count=297, segments=10, pin=5, update_rate=0.05, backup_pin=6):
         for i in range(count):
             np[i] = colors[0]
         np.write()
-        if True or iteration % 10 == 2:
+        if iteration % 20 == 3:
             rainbow_grow(np, colors, skip=len(base_powers))
             rainbow_shrink(np, colors, skip=len(base_powers))
-        return
-        continue
 
         colors.append(colors.pop(0))
         up_index = [round(count / segments * (i + 0.5))
@@ -30,8 +28,8 @@ def main(count=297, segments=10, pin=5, update_rate=0.05, backup_pin=6):
         repeat = int(round(count / segments / 2))
         peat = repeat // 2
         for j in range(peat):
-            grow_shrink(np, up_index, color[0], 1)
-            grow_shrink(np, down_index, color[0], -1)
+            grow_shrink(np, up_index, colors[0], 1)
+            grow_shrink(np, down_index, colors[0], -1)
             np.write()
 
         if iteration % 5 == 1:
@@ -45,8 +43,8 @@ def main(count=297, segments=10, pin=5, update_rate=0.05, backup_pin=6):
                 left_right(np, up_index, colors, -1 * direction, 1)
                 np.write()
         for j in range(peat, repeat):
-            grow_shrink(np, up_index, color[0], 1)
-            grow_shrink(np, down_index, color[0], -1)
+            grow_shrink(np, up_index, colors[0], 1)
+            grow_shrink(np, down_index, colors[0], -1)
             np.write()
 
 
