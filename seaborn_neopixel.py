@@ -124,7 +124,7 @@ class SeabornNeoPixel:
         update_rate = self.update_rate if update_rate is None else update_rate
         time.sleep(update_rate * count)
 
-    def write(self, add_header=False):
+    def write(self, add_header=False, sleep=True):
         if isinstance(self.np, list):  # running in mock mode
             if add_header:
                 print(self.header)
@@ -138,6 +138,8 @@ class SeabornNeoPixel:
             self.np.write()
             if self.backup_pin is not None:
                 self.backup_pin.write()
+        if sleep:
+            self.sleep()
 
     def get_random_pixel_indexes(self, count=1, deprioritized_pixels=None):
         ret = []
