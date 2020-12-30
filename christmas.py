@@ -1,10 +1,10 @@
-from seaborn_neopixel import SeabornNeoPixel, randint
+from seaborn_neopixel import SeabornNeoPixel
 
 
-def main(count, pin, segments=10, update_rate=0.05, backup_pin=None):
+def main(count, pin, segments=10, update_rate=0.05, redirects=None):
     np = SeabornNeoPixel(count=count, pin=pin, update_rate=update_rate,
-                         mock_run_count=20, backup_pin=backup_pin)
-    base_colors = ['GREEN', 'RED']  # , 'BLUE', 'YELLOW', 'PURPLE', 'AQUA']
+                         mock_run_count=20, redirects=redirects)
+    base_colors = ['GREEN', 'RED']
     base_powers = [0.75]
     colors = []
     for color in base_colors:
@@ -14,12 +14,12 @@ def main(count, pin, segments=10, update_rate=0.05, backup_pin=None):
     iteration = 0
     while np.running:
         iteration += 1
-        for i in range(count):
+        for i in range(np.count):
             np[i] = colors[0]
         np.write()
         if iteration % 20 == 3:
-            rainbow_grow(np, colors, skip=len(base_powers))
-            rainbow_shrink(np, colors, skip=len(base_powers))
+            rainbow_grow(np)
+            rainbow_shrink(np)
 
         colors.append(colors.pop(0))
         up_index = [round(count / segments * (i + 0.5))
@@ -48,43 +48,49 @@ def main(count, pin, segments=10, update_rate=0.05, backup_pin=None):
             np.write()
 
 
-def rainbow_grow(np, colors, skip=1):
+def rainbow_grow(np, colors=None, end_color=None):
+    if colors is None:
+        colors = np.get_colors('PURPLE', 'GREEN', 'RED' , 'BLUE', 'YELLOW',
+                               'AQUA', 'WHITE', power=.50)
+    if end_color is None:
+        end_color = colors[0]
     rows = []
-    for j in range(len(colors) // skip - 1):
-        for i in range(skip):
-            colors.append(colors.pop(0))
+    for j in range(len(colors)):
+        colors.append(colors.pop(0))
         rows.append(
             dict(color=colors[0],
-                 speed=2 ** len(rows),
-                 up=np.count // 2,
-                 up_end=np.count,
-                 down=np.count // 2,
+                 speed=2 ** len(rows) + int(round(np.roll_count / 300) - 1),
+                 up=np.roll_count // 2,
+                 up_end=np.roll_count,
+                 down=np.roll_count // 2,
                  down_end=0))
-        for i in range(round(np.count / (4 * rows[-1]['speed']))):
+        for i in range(round(np.roll_count / (4 * rows[-1]['speed']))):
             rainbow_update(np, rows)
 
     for i in range(rows[0]['down']):
         rainbow_update(np, rows)
-    for i in range(np.count):
+    for i in range(np.roll_count):
         np[i] = colors[0]
     np.write()
 
+    if end_color != colors[0]:
+        np.fade(colors[0])
 
-def rainbow_shrink(np, colors, skip):
+
+def rainbow_shrink(np, colors):
     rows = []
-    for j in range(len(colors) // skip - 1):
-        for i in range(skip):
-            colors.append(colors.pop(0))
+    for j in range(len(colors)):
+        colors.append(colors.pop(0))
         rows.append(
             dict(color=colors[0],
-                 speed=2 ** (len(colors) // skip - 2 - len(rows)),
+                 speed=2 ** (len(colors) - 1 - len(rows)),
                  up=0,
-                 up_end=np.count // 2,
-                 down=np.count,
-                 down_end=np.count // 2))
-    for i in range(np.count // 2):
+                 up_end=np.roll_count // 2,
+                 down=np.roll_count,
+                 down_end=np.roll_count // 2))
+    for i in range(np.roll_count // 2):
         rainbow_update(np, rows)
-    for i in range(np.count):
+    for i in range(np.roll_count):
         np[i] = colors[0]
     np.write()
 
@@ -113,7 +119,7 @@ def left_right(np, index, colors, direction, right):
     if direction == 1:
         np[0] = colors[-1]
     else:
-        np[np.count - 1] = colors[0]
+        np[np.roll_count - 1] = colors[0]
     for i in range(len(index)):
         np[index[i]] = colors[c]
         index[i] += direction
@@ -127,12 +133,16 @@ def grow_shrink(np, index, color, direction):
 
 if __name__ == '__main__':
     try:
-        from micro_secrets import SIZE, PIN
+        import micro_secrets
     except:
-        SIZE, PIN = 300, 5
+        micro_secrets = None
     keep_running = True
     while keep_running:
         try:
-            keep_running = main(SIZE, PIN)
+            keep_running = main(
+                size = getattr(micro_secrets, 'SIZE', 300),
+                pin = getattr(micro_secrets, 'PIN', 5),
+                inverse = getattr(micro_secrets, 'INVERSE', False),
+                redirect = getattr(micro_secrets, 'REDIRECT', None))
         except Exception as ex:
             print("exception: %s" % ex)

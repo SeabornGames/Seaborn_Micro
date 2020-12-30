@@ -30,7 +30,7 @@ ampy --port /dev/cu.SLAB_USBtoUART put micro_secrets.py micro_secrets.py
 ampy --port /dev/cu.SLAB_USBtoUART put seaborn_neopixel.py seaborn_neopixel.py
 ampy --port /dev/cu.SLAB_USBtoUART put seaborn_esp.py seaborn_esp.py
 
-ampy --port /dev/cu.SLAB_USBtoUART put <main>.py main.py
+ampy --port /dev/cu.SLAB_USBtoUART put grow_shrink.py main.py
 
 
 
@@ -67,5 +67,7 @@ pwd: wled1234
 https://www.instructables.com/ESP-12F-ESP8266-Module-Connection-Test/
 
 esptool.py --p /dev/cu.usbserial-14310 -c esp8266 -b 748800 erase_flash
-esptool.py --p /dev/cu.usbserial-14110 -c esp8266 -b 748800 write_flash --flash_size=detect 0 ./wled/WLED_0.11.0_ESP8266.bin
+esptool.py --p /dev/cu.usbserial-1420 -c esp8266 -b 748800 write_flash --flash_size=detect 0 ./wled/WLED_0.11.0_ESP8266.bin
 
+ampy --port /dev/cu.usbserial-1420 put micro_secrets.py micro_secrets.py
+ampy --port /dev/cu.usbserial-1420 put seaborn_neopixel.py seaborn_neopixel.py

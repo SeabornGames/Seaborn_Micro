@@ -67,11 +67,13 @@ class SeabornNeoPixel:
              }
 
     def __init__(self, pin, count, update_rate=0.1, mock_speed_up=10,
-                 mock_run_count=1, skip_header=False, backup_pin=None):
+                 mock_run_count=1, skip_header=False, backup_pin=None,
+                 redirects=None):
         self.start = time.time()
         self.count = count
         self.mock_speed_up = 1
         self.backup_pin = None
+        self.redirects = redirects or {}
         try:
             import machine, neopixel
             self.np = neopixel.NeoPixel(machine.Pin(pin), count)
@@ -88,6 +90,12 @@ class SeabornNeoPixel:
                 print("Running in Mock Mode")
                 print(self.header)
         self.update_rate = update_rate / self.mock_speed_up
+
+    @property
+    def roll_count(self):
+        if self.count < 150:
+            return self.count
+        return round(self.count / 300.0) * 300
 
     @classmethod
     def get_colors(cls, *colors, power=1):
@@ -107,6 +115,7 @@ class SeabornNeoPixel:
         return '\33[33m' + '\n'.join(ret) + '\033[0m'
 
     def __setitem__(self, index, color):
+        index = self.redirects.get(index, index)
         if index < 0 or index >= self.count:
             return
         if isinstance(color, str):
