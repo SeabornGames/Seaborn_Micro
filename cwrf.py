@@ -1,28 +1,26 @@
 from seaborn_neopixel import SeabornNeoPixel
 
-CRAWL = list(range(16))
-WALK = list(range(16, 33))
-RED
-DELAY = [1, 1, 1, 1, 1]
 
-
+CRAWL = [1, 2, 3]
+DELAY = [1,1,1,1,1]
 
 def main(count=32, pin=5, update_rate=0.005):
     np = SeabornNeoPixel(pin=pin, count=count, update_rate=update_rate)
     for i in range(count):
-        np[i] = 'BLUE'
+        np[i] = 'BLACK'
     np.write()
-    colors = np.get_colors('RED', 'GREEN', 'BLUE', 'PURPLE', 
-        'YELLOW', 'AQUA', power=.5)    
-    j = 0
-    while np.running:
-        j += 1
-        color = colors[j % len(colors)]
-        for i in range(count - 1, -1, -1) if j % 2 else range(count):
-            np[i] = color
-            np.write()
-            np.sleep()
+    colors = np.get_colors('RED', 'ORANGE', 'YELLOW', 'WHITE', power=1)    
+    words = [CRAWL, WALK, RUN, FLY]
 
+    while np.running:
+        for i, word in enumerate(words):
+            for index in word:
+                np[index] = colors[i]
+                np.write()
+            time.sleep(DELAY[i])
+#        np.fade()
+#    def fade(self, color, pixel_indexes=None, count=10, percent=10,
+#             update_rate=None, delta=None):
 
 if __name__ == '__main__':
     try:
