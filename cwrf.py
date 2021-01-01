@@ -1,15 +1,27 @@
 from seaborn_neopixel import SeabornNeoPixel
 
+CRAWL = list(range(16))
+WALK = list(range(16, 33))
+RED
+DELAY = [1, 1, 1, 1, 1]
 
-def main(count=32, pin=5, step=10, update_rate=0.05):
+
+
+def main(count=32, pin=5, update_rate=0.005):
     np = SeabornNeoPixel(pin=pin, count=count, update_rate=update_rate)
+    for i in range(count):
+        np[i] = 'BLUE'
+    np.write()
     colors = np.get_colors('RED', 'GREEN', 'BLUE', 'PURPLE', 
-        'YELLOW', 'AQUA')
-    for i in range(0, count, step):
-        for s in range(step):
-            np[i + s] = colors[i % len(colors)]
-        np.write()
-        np.sleep()
+        'YELLOW', 'AQUA', power=.5)    
+    j = 0
+    while np.running:
+        j += 1
+        color = colors[j % len(colors)]
+        for i in range(count - 1, -1, -1) if j % 2 else range(count):
+            np[i] = color
+            np.write()
+            np.sleep()
 
 
 if __name__ == '__main__':
@@ -23,3 +35,4 @@ if __name__ == '__main__':
             keep_running = main(SIZE, PIN)
         except Exception as ex:
             print("exception: %s" % ex)
+

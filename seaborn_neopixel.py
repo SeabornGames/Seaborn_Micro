@@ -59,11 +59,11 @@ class SeabornNeoPixel:
                  'RED': (255, 0, 0),
                  'GREEN': (0, 255, 0),
                  'BLUE': (0, 0, 255),
-                 'WHITE': (255, 255, 255),
+                 'WHITE': (200, 200, 200),
                  'BLACK': (0, 0, 0),
-                 'YELLOW': (255, 255, 0),
-                 'PURPLE': (255, 0, 255),
-                 'AQUA': (0, 255, 255)
+                 'YELLOW': (200, 200, 0),
+                 'PURPLE': (200, 0, 200),
+                 'AQUA': (0, 200, 200)
              }
 
     def __init__(self, pin, count, update_rate=0.1, mock_speed_up=10,
