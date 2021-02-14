@@ -1,6 +1,7 @@
 from seaborn_neopixel import SeabornNeoPixel, randint
 
 
+
 def main(count, pin, segments=10, update_rate=0.05, backup_pin=None):
     np = SeabornNeoPixel(count=count, pin=pin, update_rate=update_rate,
                          mock_run_count=20, backup_pin=backup_pin)
